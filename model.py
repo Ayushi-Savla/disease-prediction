@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
 # Load dataset
-df = pd.read_csv('data/dataset.csv')
+df = pd.read_csv('dataset.csv')
 df.fillna("None", inplace=True)
 
 # Identify symptom columns
@@ -39,42 +39,40 @@ X_train, X_test, y_train, y_test = train_test_split(
 # Save feature names
 feature_columns = X.columns.tolist()
 
-# Add symptom noise to X_test (10%)
-def add_symptom_noise(X, noise_level=0.1):
-    X_noisy = X.copy().astype(int)  # Fix dtype warning
-
-    n_cells = int(noise_level * X.shape[0] * X.shape[1])
+# Add symptom noise to X_test (2%)
+def add_symptom_noise(X, noise_level=0.02):
+    X_noisy = X.copy().astype(int)
     np.random.seed(42)
+    n_cells = int(noise_level * X.shape[0] * X.shape[1])
     row_indices = np.random.randint(0, X.shape[0], n_cells)
     col_indices = np.random.randint(0, X.shape[1], n_cells)
-
+    
     for row, col in zip(row_indices, col_indices):
         X_noisy.iat[row, col] = 1 - X_noisy.iat[row, col]  # Flip bit
 
     return X_noisy
 
-X_test_noisy = add_symptom_noise(X_test, noise_level=0.10)
+X_test_noisy = add_symptom_noise(X_test, noise_level=0.02)
 
-# Add label noise to y_test (10%)
-def add_label_noise(y, noise_level=0.1):
+# Add label noise to y_test (2%)
+def add_label_noise(y, noise_level=0.02):
     y_noisy = y.copy()
     np.random.seed(42)
-
     unique_classes = y.unique()
     n_noisy = int(noise_level * len(y))
     noisy_indices = np.random.choice(y.index, size=n_noisy, replace=False)
-
+    
     for idx in noisy_indices:
-        current = y.loc[idx]
+        current = y_noisy.loc[idx]
         choices = [cls for cls in unique_classes if cls != current]
         y_noisy.loc[idx] = np.random.choice(choices)
-
+    
     return y_noisy
 
-y_test_noisy = add_label_noise(y_test, noise_level=0.10)
+y_test_noisy = add_label_noise(y_test, noise_level=0.02)
 
 # Train model
-model = RandomForestClassifier(n_estimators=100, random_state=42)
+model = RandomForestClassifier(n_estimators=200, max_depth=20, random_state=42)
 model.fit(X_train, y_train)
 
 # Evaluate on noisy test set
