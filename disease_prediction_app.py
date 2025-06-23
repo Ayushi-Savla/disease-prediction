@@ -34,7 +34,7 @@ try:
     precaution_df = pd.read_csv('symptom_precaution.csv')
     precaution_map = precaution_df.set_index("Disease")[["Precaution_1", "Precaution_2", "Precaution_3", "Precaution_4"]].to_dict("index")
 except FileNotFoundError:
-    st.error("File 'symptom_precaution (1).csv' not found.")
+    st.error("File 'symptom_precaution.csv' not found.")
     st.stop()
 
 # Load the saved model and feature columns
