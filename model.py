@@ -11,8 +11,8 @@ from sklearn.metrics import accuracy_score
 # Load datasets
 df = pd.read_csv('dataset.csv')
 df.fillna("None", inplace=True)
-severity_df = pd.read_csv('Symptom-severity (1).csv')
-precaution_df = pd.read_csv('symptom_precaution (1).csv')
+severity_df = pd.read_csv('Symptom-severity.csv')
+precaution_df = pd.read_csv('symptom_precaution.csv')
 
 # Normalize severity mapping
 severity_df['Symptom'] = severity_df['Symptom'].str.strip().str.lower()

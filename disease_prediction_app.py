@@ -22,16 +22,16 @@ all_symptoms.sort()
 
 # Load the symptom severity map
 try:
-    severity_df = pd.read_csv('Symptom-severity (1).csv')
+    severity_df = pd.read_csv('Symptom-severity.csv')
     severity_df['Symptom'] = severity_df['Symptom'].str.strip().str.lower()
     severity_map = dict(zip(severity_df['Symptom'], severity_df['weight']))
 except FileNotFoundError:
-    st.error("File 'Symptom-severity (1).csv' not found.")
+    st.error("File 'Symptom-severity.csv' not found.")
     st.stop()
 
 # Load the precaution map
 try:
-    precaution_df = pd.read_csv('symptom_precaution (1).csv')
+    precaution_df = pd.read_csv('symptom_precaution.csv')
     precaution_map = precaution_df.set_index("Disease")[["Precaution_1", "Precaution_2", "Precaution_3", "Precaution_4"]].to_dict("index")
 except FileNotFoundError:
     st.error("File 'symptom_precaution (1).csv' not found.")
