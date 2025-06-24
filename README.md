@@ -40,22 +40,28 @@ Edit
 git clone https:(https://github.com/Ayushi-Savla/disease-prediction.git)
 2. Install dependencies:
 Make sure you have Python 3.7+ installed.
+🛠️ How to Run the App
 
-bash
-Copy
-Edit
+1. Clone the repository:
+
+git clone https://github.com/your-username/disease-prediction-app.git
+cd disease-prediction-app
+
+2. Install dependencies:
+
+Make sure you have Python 3.7+ installed.
+
 pip install -r requirements.txt
+
 If you don't have a requirements.txt file, here's a basic list:
 
-bash
-Copy
-Edit
 pip install streamlit pandas numpy scikit-learn joblib
+
 3. Run the app:
-bash
-Copy
-Edit
+
 streamlit run app.py
+
+
 # 📊 How It Works
 You select symptoms from a dropdown.
 
