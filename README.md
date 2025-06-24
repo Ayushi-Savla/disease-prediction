@@ -38,7 +38,6 @@ bash
 Copy
 Edit
 git clone https:(https://github.com/Ayushi-Savla/disease-prediction.git)
-cd disease-prediction-app
 2. Install dependencies:
 Make sure you have Python 3.7+ installed.
 
