@@ -1,12 +1,11 @@
-# Full pipeline including training, evaluation, and prediction enhancements
-
 import pandas as pd
 import numpy as np
 import joblib
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.calibration import CalibratedClassifierCV
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
 
 # Load datasets
 df = pd.read_csv('dataset.csv')
@@ -93,6 +92,33 @@ y_pred = model.predict(X_test_noisy)
 accuracy = accuracy_score(y_test_noisy, y_pred)
 cv_scores = cross_val_score(model, X_train, y_train, cv=5)
 
+# ==== Classification report and improved confusion matrix ====
+report = classification_report(y_test_noisy, y_pred, output_dict=True)
+report_df = pd.DataFrame(report).transpose()
+print("Classification Report:\n", report_df)
+report_df.to_csv("classification_report.csv", index=True)
+
+# Larger & clearer Confusion Matrix
+cm = confusion_matrix(y_test_noisy, y_pred, labels=model.classes_)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=model.classes_)
+
+fig, ax = plt.subplots(figsize=(24, 24))  # Bigger figure for more space
+disp.plot(
+    ax=ax,
+    cmap="Blues",
+    xticks_rotation=90,         # Vertical labels to avoid squeeze
+    values_format='d'
+)
+plt.title("Confusion Matrix", fontsize=22)
+plt.xlabel("Predicted Label", fontsize=16)
+plt.ylabel("True Label", fontsize=16)
+plt.xticks(fontsize=10)
+plt.yticks(fontsize=10)
+plt.tight_layout(pad=3.0)       # Add spacing to avoid cutoffs
+plt.savefig("confusion_matrix.png")
+plt.show()
+# ==== END UPDATED VISUALIZATION ====
+
 # Save model
 joblib.dump((model, feature_columns), 'disease_prediction_model.pkl')
 
@@ -125,5 +151,7 @@ example_result = predict_disease(example_symptoms)
     "cv_mean_accuracy": round(cv_scores.mean(), 2),
     "cv_std": round(cv_scores.std(), 2),
     "model_saved_as": "disease_prediction_model.pkl",
-    "example_prediction": example_result
+    "example_prediction": example_result,
+    "classification_report_saved_as": "classification_report.csv",
+    "confusion_matrix_saved_as": "confusion_matrix.png"
 }
