@@ -5,7 +5,7 @@ import joblib
 
 # Set up the Streamlit page
 st.title("🩺 Disease Prediction App")
-st.write("Select your symptoms and click 'Predict' to find out the possible disease. Tip: Select at least 5 symptoms for better prediction confidence.")
+st.write("Select your symptoms and click 'Predict' to find out the possible disease. Tip: Select at least 5 symptoms for better prediction certainty.")
 
 # Load the dataset to get all possible symptoms
 try:
@@ -34,7 +34,7 @@ try:
     precaution_df = pd.read_csv('symptom_precaution.csv')
     precaution_map = precaution_df.set_index("Disease")[["Precaution_1", "Precaution_2", "Precaution_3", "Precaution_4"]].to_dict("index")
 except FileNotFoundError:
-    st.error("File 'symptom_precaution.csv' not found.")
+    st.error("File 'symptom_precaution (1).csv' not found.")
     st.stop()
 
 # Load the saved model and feature columns
@@ -56,11 +56,11 @@ if st.button("Predict"):
     if not selected_symptoms:
         st.warning("Please select at least one symptom.")
     elif len(selected_symptoms) < 3:
-        st.warning("Selecting fewer than 5 symptoms may lead to low confidence.")
+        st.warning("Selecting fewer than 5 symptoms may lead to low prediction certainty.")
     else:
         # Create input vector
         input_data = pd.DataFrame(np.zeros((1, len(feature_columns))), columns=feature_columns)
-        
+
         severity_score = 0
         for symptom in selected_symptoms:
             symptom_clean = symptom.strip()
@@ -68,34 +68,31 @@ if st.button("Predict"):
                 input_data[symptom_clean] = 1
             if symptom_clean.lower() in severity_map:
                 severity_score += severity_map[symptom_clean.lower()]
-        
+
         # Set severity score
         if "Severity_Score" in input_data.columns:
             input_data["Severity_Score"] = severity_score
 
         # Predict
-        prediction = model.predict(input_data)[0]
         probabilities = model.predict_proba(input_data)[0]
-        confidence = probabilities[model.classes_.tolist().index(prediction)]
-
-        # Top 3 predictions
         prob_df = pd.DataFrame({
             'Disease': model.classes_,
             'Probability': probabilities
-        }).sort_values(by='Probability', ascending=False).head(3)
+        }).sort_values(by='Probability', ascending=False)
 
-        # Display results
+        prediction = prob_df.iloc[0]['Disease']
+
+        # Display predicted disease
         st.success(f"**Predicted Disease:** {prediction}")
-        st.write(f"🔍 **Model Confidence Score:** `{confidence:.2f}`")
-        st.write(f"🔥 **Your Severity Score:** `{severity_score}`")
 
-        # Interpret severity
+        # Interpret severity with words only
+        st.subheader("🩻 Symptom Severity Level:")
         if severity_score >= 18:
-            st.error("⚠️ High severity detected. Please consider seeking medical attention.")
+            st.error("High severity detected. Please consider seeking medical attention.")
         elif severity_score >= 10:
-            st.warning("⚠️ Moderate severity. Monitor symptoms closely.")
+            st.warning("Moderate severity. Monitor your symptoms.")
         else:
-            st.info("✅ Mild symptoms detected. Stay hydrated and rest.")
+            st.info("Mild severity. Stay hydrated and rest.")
 
         # Show precautions
         st.subheader("🛡️ Recommended Precautions:")
@@ -109,8 +106,8 @@ if st.button("Predict"):
 
         # Show top 3 diseases
         st.subheader("📋 Top 3 Possible Diseases:")
-        for _, row in prob_df.iterrows():
-            st.write(f"- {row['Disease']}: `{row['Probability']:.2f}`")
+        for _, row in prob_df.head(3).iterrows():
+            st.write(f"- {row['Disease']}")
 
         st.info("Note: This is an AI-powered tool, not a replacement for professional medical advice.")
 
