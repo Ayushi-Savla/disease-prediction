@@ -56,7 +56,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 feature_columns = X.columns.tolist()
 
 # Add symptom noise to test set
-def add_symptom_noise(X, noise_level=0.08):
+def add_symptom_noise(X, noise_level=0.05):
     X_noisy = X.copy().astype(int)
     np.random.seed(42)
     n_cells = int(noise_level * X.shape[0] * (X.shape[1] - 1))  # Exclude severity
@@ -69,7 +69,7 @@ def add_symptom_noise(X, noise_level=0.08):
 X_test_noisy = add_symptom_noise(X_test)
 
 # Add label noise to test labels
-def add_label_noise(y, noise_level=0.08):
+def add_label_noise(y, noise_level=0.05):
     y_noisy = y.copy()
     np.random.seed(42)
     unique_classes = y.unique()
